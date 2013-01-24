@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#####################################################################################################################
+#Notice: if you install pnp ,please type : cp check_cpu_utilization.php /usr/local/pnp4nagios/share/templates.dist/ #
+#####################################################################################################################
+
 STATE_OK=0
 STATE_WARNING=1
 STATE_CRITICAL=2
