@@ -14,7 +14,7 @@ check_para () {
 local para="$1"
 echo "${para}"|\
 grep -E '^[0-9]+$' >/dev/null 2>&1 ||\
-eval "echo Error parameters: ${para} . Please enter the number. 1>&2;exit ${STATE_WARNING}"
+eval "echo Error parameters: ${para} . Please enter numbers. 1>&2;exit ${STATE_WARNING}"
 }
 
 while getopts w:c: opt
