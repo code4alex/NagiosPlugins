@@ -64,6 +64,7 @@ awk '{str="";for (i=2;i<=NF;i++) str=str" "$i;item[str]+=$1}END{for (x in item) 
 sort -nr|\
 tee -a ${log}|\
 awk '{sum+=$1}END{print sum}'`
+chown nagios.nagios ${log}
 
 if [ -n "${cpu_utilization}" ];then
 	CPU_UTILIZATION=`echo "${cpu_utilization}/1"|bc`
