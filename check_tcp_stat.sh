@@ -27,7 +27,7 @@ if [ $# -gt 0 -o -z "${port}" -o -z "${ip}" ];then
         help
 fi
 
-info=`netstat -ptn|grep 'ESTABLISHED'|grep "${ip}:${port}"`
+info=`netstat -tn|grep 'ESTABLISHED'|grep "${ip}:${port}"`
 
 if [ -n "${info}" ];then
         echo "Check ip: ${ip} port: ${port} is OK!"
