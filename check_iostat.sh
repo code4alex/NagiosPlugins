@@ -105,7 +105,7 @@ print MaxUtil
 io_value=`echo "scale=0;${io_util}/1"|bc`
 
 min=0
-max=50
+max=100
 [ ${io_value} -lt ${warning} ] && message "OK" && exit ${STATE_OK}
 [ ${io_value} -ge ${critical} ] && message "Critical" && exit ${STATE_CRITICAL}
 [ ${io_value} -ge ${warning} ] && message "Warning" && exit ${STATE_WARNING}
