@@ -28,7 +28,8 @@ fi
 
 active_num=`ipvsadm -ln|awk '$1~/->/ && $2~/:'"${port}"'/{sum+=$(NF-1)}END{print sum}'`
 
-echo "${active_num}"|grep -E '^[0-9]+$' >/dev/null 2>&1 || eval "echo Active number is error!;exit ${STATE_UNKNOWN}"
+echo "${active_num}"|grep -E '^[0-9]+$' >/dev/null 2>&1 ||\
+eval "echo active_num is not a number! Please type sh -x $0 to debug!;exit ${STATE_UNKNOWN}"
 
 if [ ${active_num} -gt 0 ];then
         echo "${service_name} is OK! active_num = ${active_num}."
