@@ -26,15 +26,25 @@ if [ -z "${service_name}" -o -z "${port}" ];then
         usage
 fi
 
-active_num=`ipvsadm -ln|awk '$1~/->/ && $2~/:'"${port}"'/{sum+=$(NF-1)}END{print sum}'`
+tmp_file="/tmp/ipvsadm.info"
+test -f ${tmp_file} || eval "echo ${tmp_file} not found!;exit ${STATE_WARNING}"
+
+#active_num=`ipvsadm -ln|awk '$1~/->/ && $2~/:'"${port}"'/{sum+=$(NF-1)}END{print sum}'`
+active_num=`awk '$1~/->/ && $2~/:'"${port}"'/{sum+=$(NF-1)}END{print sum}' ${tmp_file}`
 
 echo "${active_num}"|grep -E '^[0-9]+$' >/dev/null 2>&1 ||\
 eval "echo active_num is not a number! Please type sh -x $0 to debug!;exit ${STATE_UNKNOWN}"
 
+message () {
+local stat="$1"
+#set pnp4nagios value
+local min=0
+local max=1000
+echo "${service_name} is ${stat}! active_num = ${active_num}| active_num=${active_num};${warning};${critical};${min};${max}"
+}
+
 if [ ${active_num} -gt 0 ];then
-        echo "${service_name} is OK! active_num = ${active_num}."
-        exit ${STATE_OK}
+        message "OK" && exit ${STATE_OK}
 else
-        echo "${service_name} is Warning! active_num = ${active_num}."
-        exit ${STATE_WARNING}
+        message "Warning" && exit ${STATE_WARNING}
 fi
