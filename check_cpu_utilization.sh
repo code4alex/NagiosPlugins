@@ -48,23 +48,30 @@ CRITICAL=`echo "${critical}/1"|bc`
 log_path="/var/log/cpu_utilization"
 
 log_name=`date -d "now" +"%F"`
-log="${log_path}/${log_name}.log"
+sys_log="${log_path}/sys_${log_name}.log"
+net_log="${log_path}/net_${log_name}.log"
 
 rm_name=`date -d "-15 day" +"%F"`
-rm_log="${log_path}/${rm_name}.log"
+rm_sys_log="${log_path}/sys_${rm_name}.log"
+rm_net_log="${log_path}/net_${rm_name}.log"
 uid=`id -u`
 
-test -e ${rm_log} && rm -f ${rm_log}
+test -e ${rm_sys_log} && rm -f ${rm_sys_log}
+test -e ${rm_net_log} && rm -f ${rm_net_log}
+
 test -d ${log_path} || mkdir -p ${log_path}
 [ ${uid} -eq 0 ] && chown nagios.nagios -R ${log_path}
-echo `date -d "now" +"%F %T"` >> ${log}
+echo `date -d "now" +"%F %T"` |tee -a ${net_log} ${sys_log} >/dev/null
 
 cpu_utilization=`ps -eo pcpu,args|\
 awk '{str="";for (i=2;i<=NF;i++) str=str" "$i;item[str]+=$1}END{for (x in item) if (item[x]>0) print item[x],x}'|\
 sort -nr|\
-tee -a ${log}|\
+tee -a ${sys_log}|\
 awk '{sum+=$1}END{print sum}'`
-chown nagios.nagios ${log}
+
+netstat -nptu >> ${net_log}
+
+chown nagios.nagios ${sys_log} ${net_log}
 
 if [ -n "${cpu_utilization}" ];then
 	CPU_UTILIZATION=`echo "${cpu_utilization}/1"|bc`
