@@ -101,10 +101,10 @@ shift $[ $OPTIND - 1 ]
 [ ${warning} -gt ${critical} ] && echo "-w ${warning} must lower than -c ${critical}!" && exit ${STATE_UNKNOWN}
 
 if [ -z "${state}" ];then
-	info=`netstat -tn|grep "${ip}:${port}"|\
+	info=`netstat -tn|grep "${ip}:${port} "|\
 	awk 'BEGIN{OFS=": ";ORS=";"}{stats[$(NF)]+=1}END{for (stat in stats) {print stat,stats[stat];sum+=stats[stat]};print "Total",sum}'`
 else
-	info=`eval "$cmd"|grep "${ip}:${port}"|\
+	info=`eval "$cmd"|grep "${ip}:${port} "|\
 	awk 'BEGIN{OFS=": ";ORS=";"}{stats[$(NF)]+=1}END{for (stat in stats) {print stat,stats[stat];sum+=stats[stat]};print "Total",sum}'`
 fi
 
