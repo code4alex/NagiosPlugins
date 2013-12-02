@@ -108,7 +108,7 @@ else
 	awk 'BEGIN{OFS=": ";ORS=";"}{stats[$(NF)]+=1}END{for (stat in stats) {print stat,stats[stat];sum+=stats[stat]};print "Total",sum}'`
 fi
 
-echo "${info}"|grep -E '[0-9]' >/dev/null 2>&1 || eval "echo Info is empty! 1>&2;exit ${STATE_UNKNOWN}"
+echo "${info}"|grep -E '[0-9]' >/dev/null 2>&1 || info="Total: 0"
 
 min=0
 max=4096
