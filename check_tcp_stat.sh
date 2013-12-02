@@ -8,7 +8,26 @@ STATE_UNKNOWN=3
 
 #help
 help () {
-        echo -en "Usage: $0 -H <host> -p <port>\nFor example:\t$0 -H 192.168.0.6 -p 8819\n" 1>&2
+	local command=`basename $0`
+        echo "NAME
+	${command} -- check network status
+SYNOPSIS
+	${command} [OPTION]
+DESCRIPTION
+	-H IP ADDRESS
+	-p LOCAL PORT
+	-S [TIME_WAIT|FIN_WAIT|ESTABLISHED|CLOSING|SYN_SEND|TIMED_WAIT|LISTEN]
+	-w warning
+	-c critical
+USAGE:
+Total connections:
+	$0 -w 100 -c 200
+Port:
+	$0 -p 8819 -w 100 -c 200
+Host and Port:
+	$0 -H 192.168.0.6 -p 8819 -w 100 -c 200
+Status:
+	$0 -H 192.168.0.6 -p 8819 -S ESTABLISHED -w 100 -c 200" 1>&2
         exit ${STATE_WARNING}
 }
 
