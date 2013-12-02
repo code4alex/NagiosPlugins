@@ -69,7 +69,7 @@ check_state () {
 
 message () {
 	local stat="$1"
-	echo "${stat} - Network Connections. Info: ${info} | Total_connection=${total_connections_int};${warning};${critical};${min};${max}"
+	echo "${stat} - Network Connections. ${info} | Total_connection=${total_connections_int};${warning};${critical};${min};${max}"
 }
 
 #input
