@@ -115,6 +115,21 @@ total_connections_int=`echo "${total_connections_str}*1"|bc`
 echo "${total_connections_int}"|grep -E '^[0-9]+$' >/dev/null 2>&1 ||\
 eval "echo ${total_connections_int} not a number!exit ${STATE_UNKNOWN}"
 
+#to log
+now_date=`date -d now +"%F %T"`
+log_path='/var/log/tcp'
+log_name=`date -d "now" +"%F"`
+
+uid=`id -u`
+if [ "${uid}" == '0' ];then
+	test -d ${log_path} || mkdir -p ${log_path}/
+	chown nagios.nagios -R ${log_path}
+fi
+
+log="${log_path}/tcp_stat_${log_name}.log"
+echo "${now_date} ${info}"|sed 's/;//g' >> ${log} 
+test -f ${log} && chown nagios.nagios ${log}
+
 [ ${total_connections_int} -lt ${warning} ] && message "OK" && exit ${STATE_OK}
 [ ${total_connections_int} -ge ${critical} ] && message "Critical" && exit ${STATE_CRITICAL}
 [ ${total_connections_int} -ge ${warning} ] && message "Warning" && exit ${STATE_WARNING}
