@@ -53,15 +53,15 @@ check_state () {
 	local stat_str="$1"
 	if [ -n "${stat_str}" ];then
 		case "${stat_str}" in
-                TIME_WAIT|FIN_WAIT|ESTABLISHED|CLOSING|SYN_SEND|TIMED_WAIT)
+				TIME_WAIT|FIN_WAIT|ESTABLISHED|CLOSING|SYN_SEND|TIMED_WAIT)
 					cmd="netstat -nt|grep ${stat_str}"
                 ;;
 				LISTEN)
 					cmd="netstat -ntl"
 				;;
                 *)
-                    echo "This script not support ${stat_str}" 1>&2
-                    exit 1
+					echo "This script not support ${stat_str}" 1>&2
+					exit ${STATE_WARNING}
                 ;;
 		esac
 	fi
@@ -69,7 +69,7 @@ check_state () {
 
 message () {
 	local stat="$1"
-	echo "${stat} - Network Connections. ${info} | Total_connection=${total_connections_int};${warning};${critical};${min};${max}"
+	echo "TCP status is ${stat} - ${info}|Total_connection=${total_connections_int};${warning};${critical};${min};${max}"
 }
 
 #input
@@ -100,19 +100,17 @@ shift $[ $OPTIND - 1 ]
 [ $# -gt 0 -o -z "${warning}" -o -z "${critical}" ] && help
 [ ${warning} -gt ${critical} ] && echo "-w ${warning} must lower than -c ${critical}!" && exit ${STATE_UNKNOWN}
 
-if [ -z "${state}" ];then
-	info=`netstat -tn|grep "${ip}:${port}"|\
-	awk 'BEGIN{OFS=": ";ORS=";"}{stats[$(NF)]+=1}END{for (stat in stats) {print stat,stats[stat];sum+=stats[stat]};print "Total",sum}'`
-else
-	info=`eval "$cmd"|grep "${ip}:${port}"|\
-	awk 'BEGIN{OFS=": ";ORS=";"}{stats[$(NF)]+=1}END{for (stat in stats) {print stat,stats[stat];sum+=stats[stat]};print "Total",sum}'`
-fi
+[ -z "${state}" ] && netstat_cmd="netstat -nt" || netstat_cmd="${cmd}"
+[ -n "${ip}" ] && run_cmd="${netstat_cmd}|grep ${ip}:" || run_cmd="${netstat_cmd}"
+[ -n "${port}" ] && run_cmd="${run_cmd}|grep -P \":${port}\s\""
 
-echo "${info}"|grep -E '[0-9]' >/dev/null 2>&1 || info="Total: 0"
+info=`eval "${run_cmd}"|awk 'BEGIN{OFS=":";ORS="; "}/^tcp/{stats[$(NF)]+=1;sum++}END{print "Total",sum;for (stat in stats) {print stat,stats[stat]}}'`
+
+echo "${info}"|grep -E '[0-9]' >/dev/null 2>&1 || info="Total:0"
 
 min=0
 max=4096
-total_connections_str=`echo "${info}"|grep -oP "Total: \d+"|awk -F':' '{print $2}'`
+total_connections_str=`echo "${info}"|grep -oP "Total:\d+"|awk -F':' '{print $2}'`
 total_connections_int=`echo "${total_connections_str}*1"|bc`
 echo "${total_connections_int}"|grep -E '^[0-9]+$' >/dev/null 2>&1 ||\
 eval "echo ${total_connections_int} not a number!exit ${STATE_UNKNOWN}"
