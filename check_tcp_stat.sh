@@ -69,7 +69,7 @@ check_state () {
 
 message () {
 	local stat="$1"
-	echo "TCP status is ${stat} - ${info}|Total_connection=${total_connections_int};${warning};${critical};${min};${max}"
+	echo "TCP status is ${stat} - ${info}|Total_connections=${total_connections_int};${warning};${critical};${min};${max}"
 }
 
 #input
