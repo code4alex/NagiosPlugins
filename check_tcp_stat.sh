@@ -33,7 +33,7 @@ Status:
 
 check_num () {
 	local num_str="$1"
-	echo ${num_str}|grep -E '^[0-9]+$' >/dev/null 2>&1 || stat='not a number!'
+	echo ${num_str}|grep -E '^[0-9]+$' >/dev/null 2>&1 || local stat='not a number!'
 	if [ "${stat}" = 'not a number!' ];then
    		echo "${num_str} ${stat}" 1>&2
 		exit ${STATE_WARNING}
@@ -42,7 +42,7 @@ check_num () {
 
 check_ip () {
 	local ip_str="$1"
-	echo "${ip_str}"|grep -P '^\d{1,3}(\.\d{1,3}){3}$' >/dev/null 2>&1 || str_stat='not a ip!'
+	echo "${ip_str}"|grep -P '^\d{1,3}(\.\d{1,3}){3}$' >/dev/null 2>&1 || local stat='not a ip!'
 	if [ "${ip_stat}" = 'not a ip!' ];then
         echo "${ip_str} ${stat}" 1>&2
 		exit ${STATE_WARNING}
