@@ -67,13 +67,29 @@ check_state () {
 	fi
 }
 
+logging () {
+local now_date=`date -d now +"%F %T"`
+local log_path='/var/log/tcp'
+local log_name=`date -d "now" +"%F"`
+
+local uid=`id -u`
+if [ "${uid}" == '0' ];then
+	test -d ${log_path} || mkdir -p ${log_path}/
+	chown nagios.nagios -R ${log_path}
+fi
+
+log="${log_path}/tcp_stat_${log_name}.log"
+echo "${now_date} ${info}"|sed 's/;//g' >> ${log} 
+test -f ${log} && chown nagios.nagios ${log}
+}
+
 message () {
 	local stat="$1"
 	echo "TCP status is ${stat} - ${info}|Total_connections=${total_connections_int};${warning};${critical};${min};${max}"
 }
 
 #input
-while getopts w:c:p:H:S: opt
+while getopts w:c:p:H:S:l opt
 do
         case "$opt" in
 		w) 
@@ -92,6 +108,9 @@ do
 			state="$OPTARG"
 			check_state "${state}"
 		;;
+		l)
+			log_status='on'
+		;;
         *) help;;
         esac
 done
@@ -101,10 +120,11 @@ shift $[ $OPTIND - 1 ]
 [ ${warning} -gt ${critical} ] && echo "-w ${warning} must lower than -c ${critical}!" && exit ${STATE_UNKNOWN}
 
 [ -z "${state}" ] && netstat_cmd="netstat -nt" || netstat_cmd="${cmd}"
-[ -n "${ip}" ] && run_cmd="${netstat_cmd}|grep ${ip}:" || run_cmd="${netstat_cmd}"
+[ -n "${ip}" ] && run_cmd="${netstat_cmd}|grep \"${ip}:\"" || run_cmd="${netstat_cmd}"
 [ -n "${port}" ] && run_cmd="${run_cmd}|grep -P \":${port}\s\""
 
-info=`eval "${run_cmd}"|awk 'BEGIN{OFS=":";ORS="; "}/^tcp/{stats[$(NF)]+=1;sum++}END{print "Total",sum;for (stat in stats) {print stat,stats[stat]}}'`
+info=`eval "${run_cmd}"|\
+awk 'BEGIN{OFS=":";ORS="; "}/^tcp/{stats[$(NF)]+=1;sum++}END{print "Total",sum;for (stat in stats) {print stat,stats[stat]}}'`
 
 echo "${info}"|grep -E '[0-9]' >/dev/null 2>&1 || info="Total:0"
 
@@ -115,20 +135,7 @@ total_connections_int=`echo "${total_connections_str}*1"|bc`
 echo "${total_connections_int}"|grep -E '^[0-9]+$' >/dev/null 2>&1 ||\
 eval "echo ${total_connections_int} not a number!exit ${STATE_UNKNOWN}"
 
-#to log
-now_date=`date -d now +"%F %T"`
-log_path='/var/log/tcp'
-log_name=`date -d "now" +"%F"`
-
-uid=`id -u`
-if [ "${uid}" == '0' ];then
-	test -d ${log_path} || mkdir -p ${log_path}/
-	chown nagios.nagios -R ${log_path}
-fi
-
-log="${log_path}/tcp_stat_${log_name}.log"
-echo "${now_date} ${info}"|sed 's/;//g' >> ${log} 
-test -f ${log} && chown nagios.nagios ${log}
+[ "${log_status}" == 'on' ] && logging
 
 [ ${total_connections_int} -lt ${warning} ] && message "OK" && exit ${STATE_OK}
 [ ${total_connections_int} -ge ${critical} ] && message "Critical" && exit ${STATE_CRITICAL}
