@@ -60,7 +60,7 @@ check_num () {
 
 message () {
 local stat="$1"
-echo "${stat} - I/O stats util_rate=${io_util} | util_rate=${io_util};${warning};${critical};${min};${max}"
+echo "${stat} - I/O stats util_rate=${io_util}% | util_rate=${io_util};${warning};${critical};${min};${max}"
 }
 
 check_system
