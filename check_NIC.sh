@@ -37,10 +37,10 @@ min=0
 max=1000000
 
 if [ "${last_num}" = "${all_err_num}" ];then
-        echo "Check NIC is OK! ${NIC_info} | all_err_num=${all_err_num};${warning};${critical};${min};${max}"
+        echo "Check NIC is OK! ${NIC_info} | errors=${all_err_num};${warning};${critical};${min};${max}"
         exit ${STATE_OK}
 else
-        echo "Check NIC is WARNING! ${NIC_info} | all_err_num=${all_err_num};${warning};${critical};${min};${max}"
+        echo "Check NIC is WARNING! ${NIC_info} | errors=${all_err_num};${warning};${critical};${min};${max}"
         echo "${all_err_num}" > ${mark}
         exit ${STATE_WARNING}
 fi
