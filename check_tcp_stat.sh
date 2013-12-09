@@ -66,7 +66,7 @@ check_state () {
 					cmd="netstat -ntl"
 				;;
                 *)
-					echo "This script not support ${stat_str}" 1>&2
+					echo "This script only support [TIME_WAIT|FIN_WAIT|ESTABLISHED|CLOSING|SYN_SEND|TIMED_WAIT]" 1>&2
 					exit ${STATE_WARNING}
                 ;;
 		esac
