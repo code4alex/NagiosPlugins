@@ -146,8 +146,9 @@ if [ -n "${warning}" -a -z "${critical}" ];then
 fi
 
 [ -z "${state}" ] && netstat_cmd="netstat -nt" || netstat_cmd="${cmd}"
-[ -n "${ip}" ] && run_cmd="${netstat_cmd}|grep \"${ip}:\"" || run_cmd="${netstat_cmd}"
-[ -n "${port}" ] && run_cmd="${run_cmd}|grep -P \":${port}\s\""
+[ -n "${ip}" -a -z "${port}" ] && run_cmd="${netstat_cmd}|grep \"${ip}:\"" 
+[ -n "${port}" -a -z "${ip}" ] && run_cmd="${netstat_cmd}|grep -P \":${port}\s\""
+[ -n "${port}" -a -n "${ip}" ] && run_cmd="${netstat_cmd}|grep -P \"${ip}:${port}\s\"" 
 
 info=`eval "${run_cmd}"|\
 awk 'BEGIN{OFS=":";ORS="; "}/^tcp/{stats[$(NF)]+=1;sum++}END{print "Total",sum;for (stat in stats) {print stat,stats[stat]}}'`
