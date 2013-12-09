@@ -33,10 +33,16 @@ Status:
 
 check_num () {
 	local num_str="$1"
-	echo ${num_str}|grep -E '^[0-9]+$' >/dev/null 2>&1 || local stat='not a number!'
-	if [ "${stat}" = 'not a number!' ];then
+	echo ${num_str}|grep -E '^[0-9]+$' >/dev/null 2>&1 || local stat='not a positive integers!'
+	if [ "${stat}" = 'not a positive integers!' ];then
    		echo "${num_str} ${stat}" 1>&2
 		exit ${STATE_WARNING}
+	else
+		local num_int=`echo ${num_str}*1|bc`
+		if [ ${num_int} -lt 0 ];then
+			echo "${num_int} must be greater than 0!" 1>&2
+			exit ${STATE_WARNING}
+		fi
 	fi
 }
 
@@ -93,9 +99,13 @@ while getopts w:c:p:H:S:l opt
 do
         case "$opt" in
 		w) 
-			warning=$OPTARG;;
+			warning=$OPTARG
+			check_num "${warning}"
+		;;
         c) 
-			critical=$OPTARG;;
+			critical=$OPTARG
+			check_num "${critical}"
+		;;
         p) 
 			port="$OPTARG"
 			check_num "${port}"
@@ -116,8 +126,24 @@ do
 done
 shift $[ $OPTIND - 1 ]
 
-[ $# -gt 0 -o -z "${warning}" -o -z "${critical}" ] && help
-[ ${warning} -gt ${critical} ] && echo "-w ${warning} must lower than -c ${critical}!" && exit ${STATE_UNKNOWN}
+#[ $# -gt 0 -o -z "${warning}" -o -z "${critical}" ] && help
+[ $# -gt 0 -o -z "${warning}" ] && help
+
+if [ -n "${warning}" -a -n "${critical}" ];then
+	if [ ${warning} -ge ${critical} ];then
+		echo "-w ${warning} must lower than -c ${critical}!" 1>&2
+		exit ${STATE_UNKNOWN}
+	fi
+fi
+
+if [ -n "${warning}" -a -z "${critical}" ];then
+	if [ "${warning}" == "0" ];then
+		critical="${warning}"
+	else
+		echo "Critical can not be empty!" 1>&2
+		exit ${STATE_UNKNOWN}
+	fi
+fi
 
 [ -z "${state}" ] && netstat_cmd="netstat -nt" || netstat_cmd="${cmd}"
 [ -n "${ip}" ] && run_cmd="${netstat_cmd}|grep \"${ip}:\"" || run_cmd="${netstat_cmd}"
@@ -136,6 +162,16 @@ echo "${total_connections_int}"|grep -E '^[0-9]+$' >/dev/null 2>&1 ||\
 eval "echo ${total_connections_int} not a number!exit ${STATE_UNKNOWN}"
 
 [ "${log_status}" == 'on' ] && logging
+
+if [ "${warning}" == "0" ];then
+	if [ ${total_connections_int} -eq 0 ];then
+		message "Warning"
+		exit ${STATE_WARNING}
+	else
+		message "OK"
+		exit ${STATE_OK}
+	fi
+fi
 
 [ ${total_connections_int} -lt ${warning} ] && message "OK" && exit ${STATE_OK}
 [ ${total_connections_int} -ge ${critical} ] && message "Critical" && exit ${STATE_CRITICAL}
