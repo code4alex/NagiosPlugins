@@ -54,7 +54,25 @@ local max=${max}
 echo "Check lsof is ${stat}! ${info}|open files=${open_files_num_int};${warning};${critical};${min};${max}"
 }
 
-while getopts w:c:u: opt
+logging () {
+local now_date=`date -d now +"%F %T"`
+local log_path='/var/log/tcp'
+local log_name=`date -d "now" +"%F"`
+local info="${info}"
+local user_id="${user_id}"
+local uid=`id -u`
+
+if [ "${uid}" == '0' ];then
+    test -d ${log_path} || mkdir -p ${log_path}/
+    chown nagios.nagios -R ${log_path}
+fi
+
+log="${log_path}/lsof_${user_id}_${log_name}.log"
+echo "${now_date} ${info}"|sed 's/;//g' >> ${log}
+test -f ${log} && chown nagios.nagios ${log}
+}
+
+while getopts w:c:u:l opt
 do
         case "$opt" in
 		w)
@@ -68,6 +86,9 @@ do
         u) 
 			user_id="$OPTARG"
 		;;
+		l)
+            log_status='on'
+        ;;
         *) 
 			usage
 		;;
@@ -92,10 +113,17 @@ else
 fi
 
 open_files_num_str=`echo ${info}|awk -F':|;' '{print $2}'`
-open_files_num_int=`echo "${open_files_num_str}*1"|bc`
+if [ -z "${open_files_num_str}" ];then
+	echo "echo \"run /usr/sbin/lsof -u ${user_id} 2>/dev/null error!Is Empty!" 1>&2
+	exit ${STATE_WARNING}
+fi 
 
+open_files_num_int=`echo "${open_files_num_str}*1"|bc`
 echo "${open_files_num_int}"|grep -E '^[0-9]+$' >/dev/null 2>&1||\
 eval "echo \"run /usr/sbin/lsof -u ${user_id} 2>/dev/null error! Not output!\" 1>&2;exit ${STATE_WARNING}"
+
+#logging
+[ "${log_status}" == 'on' ] && logging
 
 #SET PNP4NAGIOS 
 min=0
