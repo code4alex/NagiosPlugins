@@ -80,8 +80,16 @@ shift $[ $OPTIND - 1 ]
 
 check_parameter "${warning}" "${critical}"
 
-info=`/usr/sbin/lsof -u ${user_id} 2>/dev/null|\
-awk 'BEGIN{OFS=": ";ORS=";"}NR>1{items[$1]++;sum++}END{print "Total",sum;for (item in items){print item,items[item]}}'`
+#info=`/usr/sbin/lsof -u ${user_id} 2>/dev/null|\
+#awk 'BEGIN{OFS=": ";ORS=";"}NR>1{items[$1]++;sum++}END{print "Total",sum;for (item in items){print item,items[item]}}'`
+
+lsof_info="/tmp/lsof.${user_id}"
+if [ -f "${lsof_info}" ];then
+        info=`cat ${lsof_info}`
+else
+        echo "\"${lsof_info}\" not exsit!" 1>&2
+        exit ${STATE_WARNING}
+fi
 
 open_files_num_str=`echo ${info}|awk -F':|;' '{print $2}'`
 open_files_num_int=`echo "${open_files_num_str}*1"|bc`
