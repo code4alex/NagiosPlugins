@@ -7,7 +7,7 @@ STATE_CRITICAL=2
 STATE_UNKNOWN=3
 
 usage (){
-        echo -en "Usage: $0 -d <user> -w <warning> -c <critical>\n" 1>&2
+        echo -en "Usage: $0 -u <user> -w <warning> -c <critical>\n" 1>&2
         exit ${STATE_WARNING}
 }
 
@@ -56,7 +56,7 @@ echo "Check lsof is ${stat}! ${info}|open files=${open_files_num_int};${warning}
 
 logging () {
 local now_date=`date -d now +"%F %T"`
-local log_path='/var/log/tcp'
+local log_path='/var/log/lsof'
 local log_name=`date -d "now" +"%F"`
 local info="${info}"
 local user_id="${user_id}"
@@ -68,7 +68,7 @@ if [ "${uid}" == '0' ];then
 fi
 
 log="${log_path}/lsof_${user_id}_${log_name}.log"
-echo "${now_date} ${info}"|sed 's/;//g' >> ${log}
+echo "${now_date} ${info}"|sed 's/;/ /g' >> ${log}
 test -f ${log} && chown nagios.nagios ${log}
 }
 
