@@ -1,7 +1,7 @@
 <?php
 #
 # Copyright (c) 2006-2010 Joerg Linge (http://www.pnp4nagios.org)
-# Plugin: check_lvs.php
+# Plugin: check_tcp_stat.php
 #
 #
 $ds_name[1] = "Check Network";
