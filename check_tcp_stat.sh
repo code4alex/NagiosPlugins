@@ -146,6 +146,7 @@ if [ -n "${warning}" -a -z "${critical}" ];then
 fi
 
 [ -z "${state}" ] && netstat_cmd="netstat -nt" || netstat_cmd="${cmd}"
+[ -z "${ip}" -a -z "${port}" ] && run_cmd="${netstat_cmd}"
 [ -n "${ip}" -a -z "${port}" ] && run_cmd="${netstat_cmd}|grep \"${ip}:\"" 
 [ -n "${port}" -a -z "${ip}" ] && run_cmd="${netstat_cmd}|grep -P \":${port}\s\""
 [ -n "${port}" -a -n "${ip}" ] && run_cmd="${netstat_cmd}|grep -P \"${ip}:${port}\s\"" 
