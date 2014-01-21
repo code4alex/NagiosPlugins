@@ -68,7 +68,8 @@ MemUsage_num=`echo ${MemUsage}/1|bc`
 
 message () {
 local stat="$1"
-echo "MEMORY is ${stat} - Usage: ${MemUsage_num}%. Used: ${MemUsed} kB Cached: ${Cached} kB Buffers: ${Buffers} kB Free: ${MemFree} kB | Used=${MemUsed};; Cached=${Cached};; Buffers=${Buffers};; Free=${MemFree};;"
+#echo "MEMORY is ${stat} - Usage: ${MemUsage_num}%. Used: ${MemUsed} kB Cached: ${Cached} kB Buffers: ${Buffers} kB Free: ${MemFree} kB | Used=${MemUsed};; Cached=${Cached};; Buffers=${Buffers};; Free=${MemFree};;"
+echo "MEMORY is ${stat} - Usage: ${MemUsage_num}%. Used: ${MemUsed} Free: ${MemFree} kB | Used=${MemUsed};; Cached=${Cached};; Buffers=${Buffers};; Free=${MemFree};;"
 }
 
 [ ${MemUsage_num} -lt ${warning_num} ] && message "OK" && exit ${STATE_OK}
