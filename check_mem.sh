@@ -65,11 +65,15 @@ MemUsed=`echo ${MemTotal}-${MemFree}-${Cached}-${Buffers}|bc`
 MemUsage=`echo "${MemUsed}/${MemTotal}*100"|bc -l`
 MemUsage_num=`echo ${MemUsage}/1|bc`
 #echo ${MemUsage_num}
+MemTotal_MB=`echo ${MemTotal}/1024|bc`
+MemUsed_MB=`echo ${MemUsed}/1024|bc`
+MemFree_MB=`echo ${MemFree}/1024|bc`
+Cached_MB=`echo ${Cached}/1024|bc`
+Buffers_MB=`echo ${Buffers}/1024|bc`
 
 message () {
 local stat="$1"
-#echo "MEMORY is ${stat} - Usage: ${MemUsage_num}%. Used: ${MemUsed} kB Cached: ${Cached} kB Buffers: ${Buffers} kB Free: ${MemFree} kB | Used=${MemUsed};; Cached=${Cached};; Buffers=${Buffers};; Free=${MemFree};;"
-echo "MEMORY is ${stat} - Usage: ${MemUsage_num}%. Used: ${MemUsed} Free: ${MemFree} kB | Used=${MemUsed};; Cached=${Cached};; Buffers=${Buffers};; Free=${MemFree};;"
+echo "MEMORY is ${stat} - Usage: ${MemUsage_num}%. Total: ${MemTotal_MB} MB Used: ${MemUsed_MB} MB Free: ${MemFree_MB} MB | Used=${MemUsed_MB};; Cached=${Cached_MB};; Buffers=${Buffers_MB};; Free=${MemFree_MB};;"
 }
 
 [ ${MemUsage_num} -lt ${warning_num} ] && message "OK" && exit ${STATE_OK}
