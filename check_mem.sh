@@ -16,7 +16,6 @@ DESCRIPTION
         -w warning=<percent>
         -c critical=<percent>
 USAGE:
-Status:
         $0 -w 50% -c 60%" 1>&2
         exit ${STATE_WARNING}
 }
@@ -34,17 +33,6 @@ check_num () {
                         exit ${STATE_WARNING}
                 fi
         fi
-}
-
-message () {
-local stat="$1"
-local info="$2"
-local value="$3"
-local warning="${warning}"
-local critical="${critical}"
-local min=${min}
-local max=${max}
-echo "Check lsof is ${stat}! ${info}|open files=${open_files_num_int};${warning};${critical};${min};${max}"
 }
 
 #input
@@ -77,6 +65,11 @@ MemUsed=`echo ${MemTotal}-${MemFree}-${Cached}-${Buffers}|bc`
 MemUsage=`echo "${MemUsed}/${MemTotal}*100"|bc -l`
 MemUsage_num=`echo ${MemUsage}/1|bc`
 #echo ${MemUsage_num}
+
+message () {
+local stat="$1"
+echo "MEMORY is ${stat} - Usage: ${MemUsage_num}%. Used: ${MemUsed} kB Cached: ${Cached} kB Buffers: ${Buffers} kB Free: ${MemFree} kB | Used=${MemUsed};; Cached=${Cached};; Buffers=${Buffers};; Free=${MemFree};;"
+}
 
 [ ${MemUsage_num} -lt ${warning_num} ] && message "OK" && exit ${STATE_OK}
 [ ${MemUsage_num} -ge ${critical_num} ] && message "Critical" && exit ${STATE_CRITICAL}
