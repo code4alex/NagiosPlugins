@@ -161,7 +161,7 @@ max=4096
 total_connections_str=`echo "${info}"|grep -oP "Total:\d+"|awk -F':' '{print $2}'`
 total_connections_int=`echo "${total_connections_str}*1"|bc`
 echo "${total_connections_int}"|grep -E '^[0-9]+$' >/dev/null 2>&1 ||\
-eval "echo ${total_connections_int} not a number!exit ${STATE_UNKNOWN}"
+eval "echo ${total_connections_int} not a number!;exit ${STATE_UNKNOWN}"
 
 [ "${log_status}" == 'on' ] && logging
 
