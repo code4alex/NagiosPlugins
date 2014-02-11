@@ -39,7 +39,7 @@ shift $[ $OPTIND - 1 ]
 
 [ $# -gt 0 -o -z "${syslog}" -o -z "${search_str}" ] && help
 
-time_now=`date -d "-1 min" +"%FT%T"`
+time_now=`date -d "-1 min" +"%FT%T"|sed -r 's/..$//'`
 switching_info=`tail -n 20000 ${syslog}|grep -E "^${time_now}"|grep "${search_str}"`
 if [ -z "${switching_info}" ];then
         echo "Check SYSLOG is OK"
