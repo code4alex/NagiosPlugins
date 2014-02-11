@@ -41,5 +41,10 @@ shift $[ $OPTIND - 1 ]
 
 time_now=`date -d "-1 min" +"%FT%T"`
 switching_info=`tail -n 20000 ${syslog}|grep -E "^${time_now}"|grep "${search_str}"`
-[ -z "${switching_info}" ] && exit ${STATE_OK}||\
-eval 'echo SYSLOG Warning! Info:'${switching_info}' 1>&2;exit '${STATE_CRITICAL}''
+if [ -z "${switching_info}" ];then
+        echo "Check SYSLOG is OK"
+        exit ${STATE_OK}
+else
+        echo "Check SYSLOG is Warning! Info: ${switching_info}" 1>&2
+        exit ${STATE_CRITICAL}
+fi
