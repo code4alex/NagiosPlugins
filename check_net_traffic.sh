@@ -39,13 +39,35 @@ fi
 
 time_now=`date -d now +"%F %T"`
 mark="/usr/local/nagios/libexec/net_traffic.${dev_id}"
-info=`awk -F':|[ ]+' -v date="${time_now}"  '/'${dev_id}'/{print "${TIME}="date,"${RX}="$3,"${TX}="$11",${DEV}='${dev_id}'"}' "${source_file}"`
+info=`awk -F':|[ ]+' -v date="${time_now}"  'BEGIN{OFS=";"}/'${dev_id}'/{print "TIME=\""date"\"","RX="$3,"TX="$11,"DEV='${dev_id}'"}' "${source_file}"`
+
+#debug
+#eval "${info}"
+#echo $info 
+#echo $TIME $RX $TX && exit
 
 if [ ! -f "${mark}" ];then
 		echo "$info" > ${mark} || exit ${STATE_WARNING}
 		chown nagios.nagios ${mark}
 		echo "This script is First run! ${info}"
 		exit ${STATE_OK}
+else
+		old_info=`cat ${mark}`
+		eval "${old_info}"
+		OLD_TIME="${TIME}";OLD_RX=${RX};OLD_TX=${TX}		
 fi
 
-
+if [ -n "${info}" ];then
+		eval ${info}
+		sec_now=`date -d "${TIME}" +"%s"`
+		sec_old=`date -d "${OLD_TIME}" +"%s"`
+		sec=`echo "${sec_now}-${sec_old}"|bc`
+		rx=`echo "scale=2;(${RX}-${OLD_RX})/${sec}"|bc`
+		tx=`echo "scale=2;(${TX}-${OLD_TX})/${sec}"|bc`
+		echo "$info" > ${mark} || exit ${STATE_WARNING}
+		chown nagios.nagios ${mark}
+		echo $sec $rx $tx
+else
+		echo "Can not read ${source_file}" 1>&2
+		exit ${STATE_WARNING}
+fi
