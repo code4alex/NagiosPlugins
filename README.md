@@ -1,3 +1,4 @@
 NagiosPlugins
-=============
-shell for myself
+==================================================
+check_cpu_utilization.sh
+CPU占用率检测脚本：
