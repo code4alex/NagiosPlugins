@@ -7,30 +7,47 @@ STATE_CRITICAL=2
 STATE_UNKNOWN=3
 
 usage (){
-        echo -en "Usage: $0 -d [ eth|bond ]\nFor example:\t$0 -d bond0\n" 1>&2
+        echo -en "Usage: $0 -d [ eth|bond ]\nFor example:\t$0 -d bond0 -w 100[B|K|M|G] -c 200[B|K|M|G]\n" 1>&2
         exit ${STATE_WARNING}
+}
+
+check_input () {
+local str="$1"
+echo "${str}"|grep -E '[0-9]+[b|Bk|K|m|M|g|G]$' >/dev/null 2>&1 ||\
+eval "echo ${str} is wrong!;usage"
+}
+
+replace_str () {
+local str="$1"
+output=`echo "${str}"|sed -r 's/[k|K]/*1024/;s/[m|M]/*1024*1024/;s/[g|G]/*1024*1024*1024/'`
+echo ${output}
 }
 
 while getopts w:c:d: opt
 do
         case "$opt" in
 		w)
-			warning=$OPTARG
-			warning_num=`echo "${warning}"|sed  's/%//g'`
+			check_input "$OPTARG"
+			warning_str=`replace_str $OPTARG`
+			warning=`echo "${warning_str}"|bc`
 		;;
 		c)      
-			critical=$OPTARG
-			critical_num=`echo "${critical}"|sed  's/%//g'`
-			check_num "${critical_num}"
+			check_input "$OPTARG"
+            critical_str=`replace_str $OPTARG`
+            critical=`echo "${critical_str}"|bc`
 		;;
-        d) dev_id="$OPTARG";;
-        *) usage;;
+        d)
+			dev_id="$OPTARG"
+		;;
+        *)
+			usage
+		;;
         esac
 done
 
 shift $[ $OPTIND - 1 ]
 
-if [ -z "${dev_id}" ];then
+if [ -z "${dev_id}" -o -z "${warning}" -o -z "${critical}" ];then
         usage
 fi
 
@@ -75,6 +92,7 @@ if [ -n "${info}" ];then
 		tx=`echo "(${TX}-${OLD_TX})/${sec}"|bc`
 		echo "$info" > ${mark} || exit ${STATE_WARNING}
 		chown nagios.nagios ${mark}
+#debug
 #		echo $sec $rx $tx
 else
 		echo "Can not read ${source_file}" 1>&2
@@ -84,8 +102,8 @@ fi
 human_read () {
 local number="$1"
 [ `echo "(${number}-1073741824) > 0"|bc` -eq 1 ] && output="`echo "scale=2;${number}/1024/1024/1024"|bc` GB/s"
-[ `echo "(${number}-1048576) > 0"|bc` -eq 1 ]  && output="`echo "scale=2;${number}/1024/1024"|bc`MB/s"
-[ `echo "(${number}-1024) >0"|bc` -eq 1 ] && output="`echo "scale=2;${number}/1024"|bc`KB/s" || output="${number} B/s"
+[ `echo "(${number}-1048576) > 0"|bc` -eq 1 ] && output="`echo "scale=2;${number}/1024/1024"|bc` MB/s"
+[ `echo "(${number}-1024) > 0"|bc` -eq 1 ] && output="`echo "scale=2;${number}/1024"|bc` KB/s" || output="${number} B/s"
 echo "${output}"
 }
 
@@ -94,7 +112,15 @@ tx_human_read=`human_read "${tx}"`
 
 message () {
     local stat="$1"
-    echo "Net Traffic is ${stat} - RX: ${rx_human_read} TX: ${tx_human_read} interval: ${sec}s |RX=${rx};${warning};${critical};${min};${max} TX=${tx};;"
+    echo "Net Traffic is ${stat} - In: ${rx_human_read} Out: ${tx_human_read} interval: ${sec}s |in=${rx};${warning};${critical};${min};${max} out=${tx};${warning};${critical};${min};${max}"
 }
 
-message "OK"
+#pnp4nagios setting
+min=0
+max=1073741824
+
+total_int=`echo "${rx}+${tx}"|bc`
+
+[ `echo "(${total_int}-${warning}) < 0"|bc` -eq 1 ] && message "OK" && exit ${STATE_OK}
+[ `echo "(${total_int}-${critical}) >= 0"|bc` -eq 1 ] && message "Critical" && exit ${STATE_CRITICAL}
+[ `echo "(${total_int}-${warning}) >= 0"|bc` -eq 1 ] && message "Warning" && exit ${STATE_WARNING}
