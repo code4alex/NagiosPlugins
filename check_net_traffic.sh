@@ -11,9 +11,18 @@ usage (){
         exit ${STATE_WARNING}
 }
 
-while getopts d: opt
+while getopts w:c:d: opt
 do
         case "$opt" in
+		w)
+			warning=$OPTARG
+			warning_num=`echo "${warning}"|sed  's/%//g'`
+		;;
+		c)      
+			critical=$OPTARG
+			critical_num=`echo "${critical}"|sed  's/%//g'`
+			check_num "${critical_num}"
+		;;
         d) dev_id="$OPTARG";;
         *) usage;;
         esac
@@ -62,12 +71,30 @@ if [ -n "${info}" ];then
 		sec_now=`date -d "${TIME}" +"%s"`
 		sec_old=`date -d "${OLD_TIME}" +"%s"`
 		sec=`echo "${sec_now}-${sec_old}"|bc`
-		rx=`echo "scale=2;(${RX}-${OLD_RX})/${sec}"|bc`
-		tx=`echo "scale=2;(${TX}-${OLD_TX})/${sec}"|bc`
+		rx=`echo "(${RX}-${OLD_RX})/${sec}"|bc`
+		tx=`echo "(${TX}-${OLD_TX})/${sec}"|bc`
 		echo "$info" > ${mark} || exit ${STATE_WARNING}
 		chown nagios.nagios ${mark}
-		echo $sec $rx $tx
+#		echo $sec $rx $tx
 else
 		echo "Can not read ${source_file}" 1>&2
 		exit ${STATE_WARNING}
 fi
+
+human_read () {
+local number="$1"
+[ `echo "(${number}-1073741824) > 0"|bc` -eq 1 ] && output="`echo "scale=2;${number}/1024/1024/1024"|bc` GB/s"
+[ `echo "(${number}-1048576) > 0"|bc` -eq 1 ]  && output="`echo "scale=2;${number}/1024/1024"|bc`MB/s"
+[ `echo "(${number}-1024) >0"|bc` -eq 1 ] && output="`echo "scale=2;${number}/1024"|bc`KB/s" || output="${number} B/s"
+echo "${output}"
+}
+
+rx_human_read=`human_read "${rx}"`
+tx_human_read=`human_read "${tx}"`
+
+message () {
+    local stat="$1"
+    echo "Net Traffic is ${stat} - RX: ${rx_human_read} TX: ${tx_human_read} interval: ${sec}s |RX=${rx};${warning};${critical};${min};${max} TX=${tx};;"
+}
+
+message "OK"
