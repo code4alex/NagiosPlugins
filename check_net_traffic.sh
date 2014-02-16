@@ -13,7 +13,7 @@ usage (){
 
 check_input () {
 local str="$1"
-echo "${str}"|grep -E '[0-9]+[b|Bk|K|m|M|g|G]$' >/dev/null 2>&1 ||\
+echo "${str}"|grep -E '[0-9]+[b|B|k|K|m|M|g|G]$' >/dev/null 2>&1 ||\
 eval "echo ${str} is wrong!;usage"
 }
 
