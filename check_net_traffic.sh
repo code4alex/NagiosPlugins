@@ -28,13 +28,13 @@ do
         case "$opt" in
 		w)
 			check_input "$OPTARG"
-			warning_str=`replace_str $OPTARG`
+			warning_str=`replace_str "$OPTARG"`
 			warning=`echo "${warning_str}"|bc`
 		;;
 		c)      
 			check_input "$OPTARG"
-            critical_str=`replace_str $OPTARG`
-            critical=`echo "${critical_str}"|bc`
+			critical_str=`replace_str "$OPTARG"`
+			critical=`echo "${critical_str}"|bc`
 		;;
         d)
 			dev_id="$OPTARG"
