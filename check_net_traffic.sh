@@ -121,7 +121,7 @@ tx_human_read=`human_read "${tx}"`
 
 message () {
     local stat="$1"
-    echo "Net Traffic is ${stat} - In: ${rx_human_read} Out: ${tx_human_read} interval: ${sec}s |in=${rx};${warning};${critical};${min};${max} out=${tx};${warning};${critical};${min};${max}"
+    echo "${DEV} Traffic is ${stat} - In: ${rx_human_read} Out: ${tx_human_read} interval: ${sec}s |in=${rx};${warning};${critical};${min};${max} out=${tx};${warning};${critical};${min};${max}"
 }
 
 #pnp4nagios setting
