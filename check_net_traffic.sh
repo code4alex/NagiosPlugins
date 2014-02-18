@@ -110,9 +110,15 @@ fi
 
 human_read () {
 local number="$1"
-[ `echo "(${number}-1073741824) > 0"|bc` -eq 1 ] && output="`echo "scale=2;${number}/1024/1024/1024"|bc` GB/s"
-[ `echo "(${number}-1048576) > 0"|bc` -eq 1 ] && output="`echo "scale=2;${number}/1024/1024"|bc` MB/s"
-[ `echo "(${number}-1024) > 0"|bc` -eq 1 ] && output="`echo "scale=2;${number}/1024"|bc` KB/s" || output="${number} B/s"
+if [ `echo "(${number}-1073741824) > 0"|bc` -eq 1 ];then
+        output="`echo "scale=2;${number}/1024/1024/1024"|bc` GB/s"
+elif [ `echo "(${number}-1048576) > 0"|bc` -eq 1 ];then
+        output="`echo "scale=2;${number}/1024/1024"|bc` MB/s"
+elif [ `echo "(${number}-1024) > 0"|bc` -eq 1 ];then
+        output="`echo "scale=2;${number}/1024"|bc` KB/s"
+else
+        output="${number} B/s"
+fi
 echo "${output}"
 }
 
