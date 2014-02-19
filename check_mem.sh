@@ -39,22 +39,29 @@ check_num () {
 while getopts w:c: opt
 do
         case "$opt" in
-		w) 
-                        warning=$OPTARG
-						warning_num=`echo "${warning}"|sed  's/%//g'`
-                        check_num "${warning_num}"
-                ;;
+        w) 
+                warning=$OPTARG
+                warning_num=`echo "${warning}"|sed  's/%//g'`
+                check_num "${warning_num}"
+        ;;
         c) 
-                        critical=$OPTARG
-						critical_num=`echo "${critical}"|sed  's/%//g'`
-                        check_num "${critical_num}"
-                ;;
+                critical=$OPTARG
+                critical_num=`echo "${critical}"|sed  's/%//g'`
+                check_num "${critical_num}"
+        ;;
         *) help;;
         esac
 done
 shift $[ $OPTIND - 1 ]
 
 [ $# -gt 0 -o -z "${warning_num}" -o -z "${critical_num}" ] && help
+
+if [ -n "${warning_num}" -a -n "${critical_num}" ];then
+        if [ ${warning_num} -ge ${critical_num} ];then
+                echo "-w ${warning} must lower than -c ${critical}!" 1>&2
+                exit ${STATE_UNKNOWN}
+        fi
+fi
 
 datas=`awk -F':|k' '$2~/[0-9]+/{datas[$1]=$2}END{for (data in datas) {print data"="datas[data]}}' /proc/meminfo`
 
