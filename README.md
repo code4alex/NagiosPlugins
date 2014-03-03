@@ -51,4 +51,4 @@ echo 'command[check_tcp_stat]=/usr/local/nagios/libexec/check_tcp_stat.sh -w 300
 2014-03-03 09:55:54 Total:58 TIME_WAIT:51 ESTABLISHED:7  
   
 效果图：  
-![Image text](https://github.com/June-Wang/NagiosPlugins/blob/master/images/tcp_stat.jpg)  
+![tcp stat](http://github.com/June-Wang/NagiosPlugins/blob/master/images/tcp_stat.jpg)  
