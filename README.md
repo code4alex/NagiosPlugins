@@ -9,7 +9,7 @@ NagiosPlugins
 使用过程中如果有什么问题或者建议可以邮件发送到xiaojun006@163.com,或者QQ5910225。  
 
 ##功能介绍:  
-#check_mem.sh  
+###check_mem.sh  
 功能：  
 		内存检测  
 用法：  
@@ -19,7 +19,7 @@ echo 'command[check_mem]=/usr/local/nagios/libexec/check_mem.sh -w 75 -c 85' >> 
 效果图：  
 ![check_mem](/images/check_mem.jpg)  
   
-#check_net_traffic.sh  
+###check_net_traffic.sh  
 功能：  
 		网络流量监控  
 用法：  
@@ -34,7 +34,7 @@ echo 'command[check_net_traffic]=/usr/local/nagios/libexec/check_net_traffic.sh 
 效果图：  
 ![check_net_traffic](/images/check_net_traffic.jpg)  
 
-#check_tcp_stat.sh  
+###check_tcp_stat.sh  
 功能：  
 		TCP链接状态监测
 用法：  
