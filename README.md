@@ -1,6 +1,6 @@
 NagiosPlugins  
 ==================================================  
-说明：  
+#说明：  
 1、将相应的检测脚本（*.sh）拷贝到nagios的libexec目录，  
 默认路径是: /usr/local/nagios/libexec/  
 2、pnp的模板（*.php）拷贝到pnp4nagios的templates.dist目录，  
