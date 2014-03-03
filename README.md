@@ -1,5 +1,11 @@
 NagiosPlugins  
 ==================================================  
+说明：  
+1、将相应的检测脚本（*.sh）拷贝到nagios的libexec目录下，编译安装默认的路径是/usr/local/nagios/libexec/  
+2、pnp的模板（*.php）拷贝到pnp4nagios的templates.dist目录下，编译安装的默认路径是/usr/local/pnp4nagios/share/templates.dist/  
+
+使用过程中如果发现什么问题或者建议可以邮件发送到xiaojun006@163.com,或者QQ5910225。  
+
 check_mem.sh  
 功能：内存检测  
 用法：  
