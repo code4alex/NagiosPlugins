@@ -15,7 +15,7 @@ check_mem.sh
 1、添加自定义命令到nrpe.cfg  
 echo 'command[check_mem]=/usr/local/nagios/libexec/check_mem.sh -w 75 -c 85' >> /usr/local/nagios/etc/nrpe.cfg  
 效果图：
-![check_mem](/images/check_mem.jpg)
+![check_mem](/images/check_mem.jpg)  
   
 check_net_traffic.sh  
 功能：  
