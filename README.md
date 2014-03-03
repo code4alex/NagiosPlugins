@@ -30,6 +30,9 @@ echo 'command[check_net_traffic]=/usr/local/nagios/libexec/check_net_traffic.sh 
 注意：  
 1、脚本第一次运行时，会将当前网卡的相关数值写到临时文件中，临时文件会保存在/usr/local/nagios/libexec/下。  
 
+效果图：  
+![check_net_traffic](/images/check_net_traffic.jpg)  
+
 check_tcp_stat.sh  
 功能：  
 		TCP链接状态监测
