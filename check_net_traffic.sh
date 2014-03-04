@@ -97,9 +97,9 @@ if [ -n "${info}" ];then
                 eval ${info}
                 sec_now=`date -d "${TIME}" +"%s"`
                 sec_old=`date -d "${OLD_TIME}" +"%s"`
-                sec=`echo "${sec_now}-${sec_old}"|bc`
-                rx=`echo "(${RX}-${OLD_RX})/${sec}"|bc`
-                tx=`echo "(${TX}-${OLD_TX})/${sec}"|bc`
+                sec=`echo "${sec_now}-${sec_old}"|bc|sed 's/^-//'`
+                rx=`echo "(${RX}-${OLD_RX})/${sec}"|bc|sed 's/^-//'`
+                tx=`echo "(${TX}-${OLD_TX})/${sec}"|bc|sed 's/^-//'`
                 marking
 #debug
 #               echo $sec $rx $tx
