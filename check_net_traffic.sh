@@ -53,7 +53,7 @@ fi
 
 source_file='/proc/net/dev'
 if [ ! -f "${source_file}" ];then
-                echo "${source_file} not not exsit!" 1>&2
+                echo "${source_file} not exsit!" 1>&2
                 exit ${STATE_WARNING}
 fi
 
