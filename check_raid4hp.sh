@@ -9,7 +9,7 @@ STATE_UNKNOWN=3
 help () {
         local command=`basename $0`
         echo "NAME
-        ${command} -- check raid status for HP DL388 G7
+        ${command} -- check raid status for HP388G
 SYNOPSIS
         ${command} [OPTION]
 DESCRIPTION
@@ -66,22 +66,13 @@ if [ -n "${warning}" -a -n "${critical}" ];then
         fi
 fi
 
-which hpacucli >/dev/null || exit ${STATE_WARNING}
-
-#TEMP FILE
-info_tmp="/tmp/info.tmp.$$"
-
-#SET EXIT STATUS AND COMMAND
-trap "exit 1"           HUP INT PIPE QUIT TERM
-trap "rm -f ${info_tmp}"  EXIT
-
 hp_cmd="/usr/sbin/hpacucli ctrl slot=${slot_id} show config detail"
-eval ${hp_cmd} > ${info_tmp} 2>&1 || stat='error'
+#eval ${hp_cmd} > ${info_tmp} 2>&1 || stat='error'
 
-if [ "${stat}" == 'error' ];then
-        echo "` cat ${info_tmp}`"
-        exit ${STATE_WARNING}
-fi
+info_tmp="/tmp/hpacucli.root.${slot_id}"
+
+test -f ${info_tmp} ||\
+eval "echo Please type \'${hp_cmd} \> ${info_tmp}\' to crontab for root!;exit ${STATE_WARNING}"
 
 failed_count=`cat ${info_tmp} |grep 'Failed'|wc -l`
 
