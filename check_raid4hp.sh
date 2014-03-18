@@ -84,7 +84,8 @@ fi
 
 info=`cat ${info_tmp}|\
 awk '
-$0~/ '${disk_stat}'/{stat+=1;stat_info[$0]+=$1};
+#$0~/ '${disk_stat}'/{stat+=1;stat_info[$0]+=$1};
+$0~/Failed/{stat+=1;stat_info[$0]+=$1};
 END{
 OFS=";"
 ORS=";"
@@ -95,7 +96,7 @@ for (disk in stat_info)
 #echo "${info}"
 message () {
     local stat="$1"
-    echo "RAID is ${stat}. ${info} | Failed disk=${failed_count};${warning};${critical};${min};${max}"
+    echo "RAID is ${stat}. ${info} | Failed status=${failed_count};${warning};${critical};${min};${max}"
 }
 
 #pnp4nagios setting
