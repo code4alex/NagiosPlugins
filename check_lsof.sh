@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#注意：此脚本要配合cron_check_lsof.sh联用，应用账户crontab每分钟执行一次cron_check_lsof.sh，此脚本调用相关临时文件
+
 #set nagios status
 STATE_OK=0
 STATE_WARNING=1
