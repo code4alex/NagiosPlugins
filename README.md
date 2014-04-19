@@ -60,3 +60,4 @@ echo 'command[check_tcp_stat]=/usr/local/nagios/libexec/check_tcp_stat.sh -w 300
 
 提示信息：  
 ![tcp stat](/images/tcp_stat_output.jpg)  
+
