@@ -64,7 +64,8 @@ if [ "${dev_stat}" = 'not found' ];then
 fi
 
 time_now=`date -d now +"%F %T"`
-mark="/usr/local/nagios/libexec/net_traffic.${dev_id}"
+nagios_path='/usr/local/nagios/libexec'
+test -d ${nagios_path} || mkdir -p ${nagios_path} && mark="${nagios_path}/net_traffic.${dev_id}"
 search_dev=`awk -F':' '/'${dev_id}'/{print $2}' /proc/net/dev|sed -r 's/^[ ]+//'`
 info=`echo "${search_dev}"|awk -v date="${time_now}"  'BEGIN{OFS=";"}{print "TIME=\""date"\"","RX="$1,"TX="$9,"DEV='${dev_id}'"}'`
 
