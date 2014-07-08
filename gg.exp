@@ -1,0 +1,7 @@
+#!/usr/bin/expect -f 
+
+spawn ./ggsci
+expect ">"
+send "info all\r"
+expect ">"
+send "quit\r"
