@@ -63,7 +63,7 @@ if [ -n "${warning_num}" -a -n "${critical_num}" ];then
         fi
 fi
 
-datas=`awk -F':|k' '$2~/[0-9]+/{datas[$1]=$2}END{for (data in datas) {print data"="datas[data]}}' /proc/meminfo`
+datas=`awk -F':|k' '$2~/[0-9]+/{datas[$1]=$2}END{for (data in datas) {print data"="datas[data]}}' /proc/meminfo | grep -Ev '[)|(]'`
 
 var=`echo "${datas}"|sed 's/ //g'`
 eval "${var}"
