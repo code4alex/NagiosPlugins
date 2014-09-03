@@ -6,15 +6,16 @@ STATE_WARNING=1
 STATE_CRITICAL=2
 STATE_UNKNOWN=3
 
-file='/u01/app/oracle/product/10.2.0/db_1/network/log/listener.log'
-my_date=`date -d "-1 minute" +"%d-%b-%Y %R"`
+file='/opt/oracle/logs/listener.log'
+#my_date=`date -d "-1 minute" +"%d-%b-%Y %R"`
+my_date=`date -d "-1 minute" +"%a %b %d %R"`
 
 if [ ! -e ${file} ];then
         echo "${file} not exist!"
         exit ${STATE_UNKNOWN}
 fi
 
-info=`mawk "BEGIN{IGNORECASE=1;a=0};/${my_date}/{a=NR};a != 0{print}" ${file}|\
+info=`tail -n 2000 ${file}|mawk "BEGIN{IGNORECASE=1;a=0};/${my_date}/{a=NR};a != 0{print}"|\
 grep -E 'TNS-'|sort -u`
 
 if [ -z "${info}" ];then
