@@ -39,6 +39,6 @@ if [ "${file_now}" == "${time_now}" ];then
         echo "${log_file} have a new message!"
         exit ${STATE_CRITICAL}
 else
-        echo "${log_file} is fine!"
+        echo "${log_file} is OK!"
         exit ${STATE_OK}
 fi
