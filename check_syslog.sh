@@ -21,7 +21,7 @@ USAGE:
 }
 
 #input
-while getopts f:s: opt
+while getopts f:s:d: opt
 do
         case "$opt" in
         f)
@@ -32,6 +32,9 @@ do
         s)
                 search_str=$OPTARG
         ;;
+        d)
+                search_type=$OPTARG
+        ;;
         *)      help;;
         esac
 done
@@ -40,7 +43,7 @@ shift $[ $OPTIND - 1 ]
 [ $# -gt 0 -o -z "${syslog}" -o -z "${search_str}" ] && help
 
 time_now=`date -d "-1 min" +"%FT%T"|sed -r 's/..$//'`
-error_num=`tail -n 5000 ${syslog}|grep -E "^${time_now}"|grep "${search_str}"|wc -l`
+error_num=`tail -n 5000 ${syslog}|grep -E "^${time_now}"|grep "${search_str}"|grep "${search_type}"|wc -l`
 
 if [ ${error_num} -eq 0 ];then
         echo "Check SYSLOG is OK"
