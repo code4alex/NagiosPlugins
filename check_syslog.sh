@@ -40,11 +40,12 @@ shift $[ $OPTIND - 1 ]
 [ $# -gt 0 -o -z "${syslog}" -o -z "${search_str}" ] && help
 
 time_now=`date -d "-1 min" +"%FT%T"|sed -r 's/..$//'`
-switching_info=`tail -n 20000 ${syslog}|grep -E "^${time_now}"|grep "${search_str}"`
-if [ -z "${switching_info}" ];then
+error_num=`tail -n 5000 ${syslog}|grep -E "^${time_now}"|grep "${search_str}"|wc -l`
+
+if [ ${error_num} -eq 0 ];then
         echo "Check SYSLOG is OK"
         exit ${STATE_OK}
 else
-        echo "Check SYSLOG is Warning! Info: ${switching_info}" 1>&2
+        echo "Check SYSLOG is CRITICAL! \"${search_str}\" is match! ${error_num}/min" 1>&2
         exit ${STATE_CRITICAL}
 fi
