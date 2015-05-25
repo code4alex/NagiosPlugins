@@ -23,7 +23,7 @@ if [ ! -e ${file} ];then
 fi
 
 info=`tail -n 2000 ${file}|mawk "BEGIN{a=0};/${my_date}/{a=NR};a != 0{print}"|\
-grep -E 'ORA-|Error|WARNING|Starting|Shutting'|sort -u`
+grep -E 'ORA-|Error|WARNING|Starting|Shutting'|grep -v 'process VKRM'|sort -u`
 
 
 if [ -z "${info}" ];then
