@@ -5,6 +5,8 @@ NagiosPlugins
 2、pnp的模板（*.php）拷贝到pnp4nagios的templates.dist目录(/usr/local/pnp4nagios/share/templates.dist/)  
 
 使用过程中如果有什么问题或者建议可以邮件发送到xiaojun006@163.com,或者QQ5910225。  
+##注意：
+在zabbix满天飞的环境下，我还是极力推荐Check MK。下载地址：http://omdistro.org/download
 
 ##功能介绍:  
 ###check_mem.sh  
