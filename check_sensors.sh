@@ -49,7 +49,7 @@ sed -r 's/\+//g;s/[ ]+/ /g'|awk '{num++;sum+=$3}END{print sum/num}'`
 message () {
     local stat="$1"
         local value="$2"
-    echo "${dev} Temperature is ${stat} - ${temp}/${value}|temp=${temp};${warning};${critical};${min};${max}"
+    echo "Temperature is ${stat} - ${dev}: ${temp}/${value}|temp=${temp};${warning};${critical};${min};${max}"
 }
 
 #pnp4nagios setting
