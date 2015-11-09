@@ -56,6 +56,6 @@ message () {
 min=0
 max=150
 
-[ `echo "(${total_int}-${warning}) < 0"|bc` -eq 1 ] && message "OK" "${warning}" && exit ${STATE_OK}
-[ `echo "(${total_int}-${critical}) >= 0"|bc` -eq 1 ] && message "Critical" "${critical}" && exit ${STATE_CRITICAL}
-[ `echo "(${total_int}-${warning}) >= 0"|bc` -eq 1 ] && message "Warning" "${warning}" && exit ${STATE_WARNING}
+[ `echo "(${temp}-${warning}) < 0"|bc` -eq 1 ] && message "OK" "${warning}" && exit ${STATE_OK}
+[ `echo "(${temp}-${critical}) >= 0"|bc` -eq 1 ] && message "Critical" "${critical}" && exit ${STATE_CRITICAL}
+[ `echo "(${temp}-${warning}) >= 0"|bc` -eq 1 ] && message "Warning" "${warning}" && exit ${STATE_WARNING}
