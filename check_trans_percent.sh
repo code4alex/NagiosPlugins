@@ -85,7 +85,7 @@ echo ${trans_number}|grep -E '[0-9]+' >/dev/null 2>&1 || database_return='fail'
 
 message () {
 local stat="$1"
-        echo "交易波动 is $stat.波动百分比:${percent}% 阀值:(+-)$percent_warning% 当前笔数:${trans_number} 之前笔数:${old_trans_number}|percent=$percent;;;"
+        echo "交易波动 is $stat.波动百分比:${percent}% 阀值:(+-)$percent_warning% 当前笔数:${trans_number} 之前笔数:${old_trans_number}|percent=$percent;;;RANS=$trans_number;;;;MONEY=$trans_cash;;;;"
 }
 
 if [ `echo "(${old_trans_number}-${trans_number}) < 0"|bc` -eq 1 ];then
