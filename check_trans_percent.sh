@@ -96,4 +96,5 @@ fi
 
 marking
 percent_value=`echo $percent|sed -r 's/^-//'`
+[ `echo "${trans_number} = 0"|bc` -eq 1 ] && message "CRITICAL" && exit ${STATE_CRITICAL}
 [ `echo "($percent_value-$percent_warning) > 0"|bc` -eq 1 ] && message "CRITICAL" && exit ${STATE_CRITICAL} || message "OK" && exit ${STATE_OK}
