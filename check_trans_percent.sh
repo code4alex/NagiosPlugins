@@ -57,8 +57,7 @@ query=`cat ${TEMP}|grep -Ev '^$'|sed -r 's/^[ ]+//g'`
 trans_number=`echo ${query}|awk '{print $1}'`
 trans_cash=`echo ${query}|awk '{print $2}'`
 
-nagios_path='/usr/local/nagios/libexec'
-test -d ${nagios_path} || mkdir -p ${nagios_path} && mark="${nagios_path}/trans_percent.mark"
+mark="/tmp/trans_percent.mark"
 
 marking () {
         echo "${trans_number} ${trans_cash}" > ${mark} || exit ${STATE_WARNING}
@@ -66,18 +65,18 @@ marking () {
 }
 
 if [ ! -f "${mark}" ];then
-                marking
-                echo "This script is First run! ${info}"
-                exit ${STATE_OK}
+	marking
+	echo "This script is First run! ${info}"
+	exit ${STATE_OK}
 else
-                                old_trans_number=`cat $mark|awk '{print $1}'`
-                                old_trans_cash=`cat $mark|awk '{print $2}'`
-                                if [ -z "${old_trans_number}" -o -z "${old_trans_cash}" ];then
-                                        old_info=`cat $mark|head -n 1`
-                                        echo "Data Error: ${old_info}" 1>&2
-                                        marking
-                                        exit ${STATE_WARNING}
-                                fi
+	old_trans_number=`cat $mark|awk '{print $1}'`
+	old_trans_cash=`cat $mark|awk '{print $2}'`
+	if [ -z "${old_trans_number}" -o -z "${old_trans_cash}" ];then
+		old_info=`cat $mark|head -n 1`
+		echo "Data Error: ${old_info}" 1>&2
+		marking
+		exit ${STATE_WARNING}
+	fi
 fi
 
 echo ${trans_number}|grep -E '[0-9]+' >/dev/null 2>&1 || database_return='fail'
