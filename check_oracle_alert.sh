@@ -15,14 +15,16 @@ file="$1"
 
 export LC_ALL=C
 my_date=`date -d "-1 minute" +"%a %b %d %R"`
+my_year=`date -d "-1 minute" +"%Y"`
 
 if [ ! -e ${file} ];then
         echo "${file} not exist!"
-	usage
+        usage
 #        exit ${STATE_UNKNOWN}
 fi
 
 info=`tail -n 2000 ${file}|mawk "BEGIN{a=0};/${my_date}/{a=NR};a != 0{print}"|\
+grep "${my_year}"|\
 grep -E 'ORA-|Error|WARNING|Starting|Shutting'|grep -v 'process VKRM'|sort -u`
 
 
