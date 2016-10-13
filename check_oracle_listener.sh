@@ -18,7 +18,6 @@ export LC_ALL=C
 #file='/opt/oracle/logs/listener.log'
 #my_date=`date -d "-1 minute" +"%d-%b-%Y %R"`
 my_date=`date -d "-1 minute" +"%a %b %d %R"`
-my_year=`date -d "-1 minute" +"%Y"`
 
 if [ ! -e ${file} ];then
         echo "${file} not exist!"
@@ -27,7 +26,6 @@ if [ ! -e ${file} ];then
 fi
 
 info=`tail -n 2000 ${file}|mawk "BEGIN{IGNORECASE=1;a=0};/${my_date}/{a=NR};a != 0{print}"|\
-grep "${my_year}"|\
 grep -E 'TNS-'|sort -u`
 
 if [ -z "${info}" ];then
