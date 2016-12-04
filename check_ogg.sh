@@ -18,7 +18,7 @@ info=`grep "${time_now}" ${log_file} |grep 'ERROR'|grep 'OGG-'|head -n1|grep -oP
 if [ -z "${info}" ];then
         echo "check OGG is OK!|error=0;;;;" && exit ${STATE_OK}
 else
-        echo "check OGG is WARNING!|error=1;;;;" && exit ${STATE_WARNING}
+        echo "check OGG is WARNING!${info}|error=1;;;;" && exit ${STATE_WARNING}
 fi
 
 exit ${STATE_UNKNOWN}
