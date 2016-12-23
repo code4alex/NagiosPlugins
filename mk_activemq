@@ -1,0 +1,67 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+# +------------------------------------------------------------------+
+# |             ____ _               _        __  __ _  __           |
+# |            / ___| |__   ___  ___| | __   |  \/  | |/ /           |
+# |           | |   | '_ \ / _ \/ __| |/ /   | |\/| | ' /            |
+# |           | |___| | | |  __/ (__|   <    | |  | | . \            |
+# |            \____|_| |_|\___|\___|_|\_\___|_|  |_|_|\_\           |
+# |                                                                  |
+# | Copyright Mathias Kettner 2014             mk@mathias-kettner.de |
+# +------------------------------------------------------------------+
+#
+# This file is part of Check_MK.
+# The official homepage is at http://mathias-kettner.de/check_mk.
+#
+# check_mk is free software;  you can redistribute it and/or modify it
+# under the  terms of the  GNU General Public License  as published by
+# the Free Software Foundation in version 2.  check_mk is  distributed
+# in the hope that it will be useful, but WITHOUT ANY WARRANTY;  with-
+# out even the implied warranty of  MERCHANTABILITY  or  FITNESS FOR A
+# PARTICULAR PURPOSE. See the  GNU General Public License for more de-
+# tails. You should have  received  a copy of the  GNU  General Public
+# License along with GNU Make; see the file  COPYING.  If  not,  write
+# to the Free Software Foundation, Inc., 51 Franklin St,  Fifth Floor,
+# Boston, MA 02110-1301 USA.
+
+from lxml import etree
+import sys
+import os
+
+host='127.0.0.1'
+port='8161'
+user='admin'
+passwd='admin'
+
+if len(sys.argv) > 3:
+    piggyback_mode = True
+else:
+    piggyback_mode = False
+
+#address = "http://%s:%s/admin/xml/queues.jsp" % (sys.argv[1], sys.argv[2])
+address = "http://%s:%s/admin/xml/queues.jsp" % (host,port)
+
+val = os.popen("curl -s -u %s:%s %s" % (user,passwd,address)).read()
+
+attributes = [ 'size', 'consumerCount', 'enqueueCount', 'dequeueCount' ]
+#data = etree.parse(address).getroot()
+data = etree.fromstring(val)
+count = 0
+if not piggyback_mode:
+    print "<<<mq_queues>>>"
+for line in data:
+    count += 1
+    if piggyback_mode:
+        print "<<<<%s>>>>" % line.get('name')
+        print "<<<mq_queues>>>"
+    print "[[%s]]" % line.get('name')
+    stats = line.findall('stats')
+    values = ""
+    for job in attributes:
+        values +="%s " % stats[0].get(job)
+    print values
+
+if piggyback_mode:
+    print "<<<<>>>>"
+    print "<<<local>>>"
+    print "0 Actice_MQ - Found %s Queues in total" % count
