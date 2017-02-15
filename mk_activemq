@@ -30,11 +30,15 @@ import urllib2
 import base64
 import sys
 
+host = '127.0.0.1'
+port = '8161'
+
 if len(sys.argv) > 3:
     piggyback_mode = True
 else:
     piggyback_mode = False
-address = "http://%s:%s/admin/xml/queues.jsp" % (sys.argv[1], sys.argv[2])
+#address = "http://%s:%s/admin/xml/queues.jsp" % (sys.argv[1], sys.argv[2])
+address = "http://%s:%s/admin/xml/queues.jsp" % (host,port)
 #theurl = 'http://abc.com/A.xml'
 
 username='admin'
