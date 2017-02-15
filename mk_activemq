@@ -26,26 +26,44 @@
 
 from lxml import etree
 import sys
-import os
-
-host='127.0.0.1'
-port='8161'
-user='admin'
-passwd='admin'
+import urllib2
+import base64
+import sys
 
 if len(sys.argv) > 3:
     piggyback_mode = True
 else:
     piggyback_mode = False
+address = "http://%s:%s/admin/xml/queues.jsp" % (sys.argv[1], sys.argv[2])
+#theurl = 'http://abc.com/A.xml'
 
-#address = "http://%s:%s/admin/xml/queues.jsp" % (sys.argv[1], sys.argv[2])
-address = "http://%s:%s/admin/xml/queues.jsp" % (host,port)
+username='admin'
+password='admin'
 
-val = os.popen("curl -s -u %s:%s %s" % (user,passwd,address)).read()
+req = urllib2.Request(address)
+
+base64string = base64.encodestring(
+            '%s:%s' % (username, password))[:-1]
+
+authheader =  "Basic %s" % base64string
+req.add_header("Authorization", authheader)
+
+try:
+    handle = urllib2.urlopen(req,timeout=1)
+except:
+    print "It looks like the username or password is wrong."
+    sys.exit(1)
+
+try:
+	xml = handle.read()
+except:
+	print "It looks like the username or password is wrong."
+	sys.exit(1)
+#inputXml  = etree.fromstring(xml)
 
 attributes = [ 'size', 'consumerCount', 'enqueueCount', 'dequeueCount' ]
 #data = etree.parse(address).getroot()
-data = etree.fromstring(val)
+data = etree.fromstring(xml)
 count = 0
 if not piggyback_mode:
     print "<<<mq_queues>>>"
