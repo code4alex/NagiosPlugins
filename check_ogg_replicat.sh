@@ -21,12 +21,20 @@ info=`echo "info all"|${cmd}|grep REPLICAT`
 num=`echo ${info}|grep -oP '00:0[0-9]:\d{2}'|wc -l`
 
 info=`echo ${info}|sed -r 's/[ ]+/ /g'`
+
+echo ${info}|grep REPLICAT|grep RUNNING >/dev/null 2>&1|| stat='error'
+
+if [ "${stat}" == 'error' ];then 
+        echo "REPLICAT is not RUNNING! ${info}|timeout=1;;;"
+        exit ${STATE_WARNING}
+fi
+
 if [ ${num} -ge 2 ];then
-    echo "OGG replicat is OK! ${info}|timeout=0;;;"
-    exit ${STATE_OK}
+        echo "OGG replicat is OK! ${info}|timeout=0;;;"
+        exit ${STATE_OK}
 else
-    echo "OGG replicat is WARNING! ${info}|timeout=1;;;"
-    exit ${STATE_WARNING}
+        echo "OGG replicat is WARNING! ${info}|timeout=1;;;"
+        exit ${STATE_WARNING}
 fi
 
 exit ${STATE_UNKNOWN}
