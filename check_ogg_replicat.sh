@@ -17,11 +17,11 @@ info=`echo "info all"|${cmd}|grep REPLICAT`
 
 num=`echo ${info}|grep -oP '00:0[0-9]:\d{2}'|wc -l`
 
+info=`echo ${info}|sed -r 's/[ ]+/ /g'`
 if [ ${num} -ge 2 ];then
-    echo "OGG replicat is OK!|timeout=0;;;"
+    echo "OGG replicat is OK! ${info}|timeout=0;;;"
     exit ${STATE_OK}
 else
-    info=`echo ${info}|sed -r 's/[ ]+/ /g'`
     echo "OGG replicat is WARNING! ${info}|timeout=1;;;"
     exit ${STATE_WARNING}
 fi
