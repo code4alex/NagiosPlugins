@@ -8,7 +8,10 @@ STATE_UNKNOWN=3
 test -f /home/oracle/.bash_profile &&\
 source /home/oracle/.bash_profile
 
-cmd='/u01/app/ogg/ggsci'
+cmd="$1"
+#cmd='/u01/app/ogg/ggsci'
+test -x ${cmd} ||\
+eval "echo ${cmd} not found!;exit ${STATE_UNKNOWN}"
 
 echo "info all"|${cmd} >/dev/null 2>&1 ||\
 eval "echo Check OGG replicat error!;exit ${STATE_UNKNOWN}"
