@@ -7,8 +7,8 @@ STATE_CRITICAL=2
 STATE_UNKNOWN=3
 
 usage (){
-        echo -en "Usage: $0 -d [ eth|bond ]\nFor example:\t$0 -d bond0 -w 100[B|K|M|G] -c 200[B|K|M|G]\n" 1>&2
-        exit ${STATE_WARNING}
+    echo -en "Usage: $0 -d [ eth|bond ]\nFor example:\t$0 -d bond0 -w 100[B|K|M|G] -c 200[B|K|M|G]\n" 1>&2
+    exit ${STATE_WARNING}
 }
 
 check_input () {
@@ -25,42 +25,42 @@ echo ${output}
 
 while getopts w:c:d: opt
 do
-        case "$opt" in
-		w)
-			check_input "$OPTARG"
-			warning_str=`replace_str "$OPTARG"`
-			warning=`echo "${warning_str}"|bc`
-		;;
-		c)      
-			check_input "$OPTARG"
-			critical_str=`replace_str "$OPTARG"`
-			critical=`echo "${critical_str}"|bc`
-		;;
-        d)
-			dev_id="$OPTARG"
-		;;
-        *)
-			usage
-		;;
-        esac
+    case "$opt" in
+    w)
+        check_input "$OPTARG"
+        warning_str=`replace_str "$OPTARG"`
+        warning=`echo "${warning_str}"|bc`
+    ;;
+    c)      
+        check_input "$OPTARG"
+        critical_str=`replace_str "$OPTARG"`
+        critical=`echo "${critical_str}"|bc`
+    ;;
+    d)
+        dev_id="$OPTARG"
+    ;;
+    *)
+        usage
+    ;;
+    esac
 done
 
 shift $[ $OPTIND - 1 ]
 
 if [ -z "${dev_id}" -o -z "${warning}" -o -z "${critical}" ];then
-        usage
+    usage
 fi
 
 source_file='/proc/net/dev'
 if [ ! -f "${source_file}" ];then
-                echo "${source_file} not exsit!" 1>&2
-                exit ${STATE_WARNING}
+    echo "${source_file} not exsit!" 1>&2
+    exit ${STATE_WARNING}
 fi
 
 grep "${dev_id}" ${source_file} >/dev/null 2>&1 || dev_stat='not found'
 if [ "${dev_stat}" = 'not found' ];then
-                echo "${dev_id} ${dev_stat}!" 1>&2
-                usage
+    echo "${dev_id} ${dev_stat}!" 1>&2
+    usage
 fi
 
 time_now=`date -d now +"%F %T"`
@@ -75,50 +75,50 @@ info=`echo "${search_dev}"|awk -v date="${time_now}"  'BEGIN{OFS=";"}{print "TIM
 #echo $TIME $RX $TX && exit
 
 marking () {
-        echo "$info" > ${mark} || exit ${STATE_WARNING}
-        chown nagios.nagios ${mark}
+    echo "$info" > ${mark} || exit ${STATE_WARNING}
+    chown nagios.nagios ${mark}
 }
 
 if [ ! -f "${mark}" ];then
-                marking
-                echo "This script is First run! ${info}"
-                exit ${STATE_OK}
+    marking
+    echo "This script is First run! ${info}"
+    exit ${STATE_OK}
 else
-                old_info=`cat ${mark}`
-                eval "${old_info}"
-                OLD_TIME="${TIME}";OLD_RX=${RX};OLD_TX=${TX}
-                if [ -z "${OLD_RX}" -o -z "${OLD_TX}" ];then
-                        echo "Data Error: ${old_info}" 1>&2
-                        marking
-                        exit ${STATE_WARNING}
-                fi
+    old_info=`cat ${mark}`
+    eval "${old_info}"
+    OLD_TIME="${TIME}";OLD_RX=${RX};OLD_TX=${TX}
+    if [ -z "${OLD_RX}" -o -z "${OLD_TX}" ];then
+        echo "Data Error: ${old_info}" 1>&2
+        marking
+        exit ${STATE_WARNING}
+    fi
 fi
 
 if [ -n "${info}" ];then
-                eval ${info}
-                sec_now=`date -d "${TIME}" +"%s"`
-                sec_old=`date -d "${OLD_TIME}" +"%s"`
-                sec=`echo "${sec_now}-${sec_old}"|bc|sed 's/-//'`
-                rx=`echo "(${RX}-${OLD_RX})/${sec}"|bc|sed 's/-//'`
-                tx=`echo "(${TX}-${OLD_TX})/${sec}"|bc|sed 's/-//'`
-                marking
-#debug
-#               echo $sec $rx $tx
+    eval ${info}
+    sec_now=`date -d "${TIME}" +"%s"`
+    sec_old=`date -d "${OLD_TIME}" +"%s"`
+    sec=`echo "${sec_now}-${sec_old}"|bc|sed 's/-//'`
+    rx=`echo "(${RX}-${OLD_RX})/${sec}"|bc|sed 's/-//'`
+    tx=`echo "(${TX}-${OLD_TX})/${sec}"|bc|sed 's/-//'`
+    marking
+    #debug
+    #echo $sec $rx $tx
 else
-                echo "Can not read ${source_file}" 1>&2
-                exit ${STATE_WARNING}
+    echo "Can not read ${source_file}" 1>&2
+    exit ${STATE_WARNING}
 fi
 
 human_read () {
 local number="$1"
 if [ `echo "(${number}-1073741824) > 0"|bc` -eq 1 ];then
-        output="`echo "scale=2;${number}/1024/1024/1024"|bc` GB/s"
+    output="`echo "scale=2;${number}/1024/1024/1024"|bc` GB/s"
 elif [ `echo "(${number}-1048576) > 0"|bc` -eq 1 ];then
-        output="`echo "scale=2;${number}/1024/1024"|bc` MB/s"
+    output="`echo "scale=2;${number}/1024/1024"|bc` MB/s"
 elif [ `echo "(${number}-1024) > 0"|bc` -eq 1 ];then
-        output="`echo "scale=2;${number}/1024"|bc` KB/s"
+    output="`echo "scale=2;${number}/1024"|bc` KB/s"
 else
-        output="${number} B/s"
+    output="${number} B/s"
 fi
 echo "${output}"
 }
