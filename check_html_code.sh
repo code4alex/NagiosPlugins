@@ -22,12 +22,12 @@ trap "test -f ${tmp_file} && rm -f ${tmp_file}"  EXIT
 
 url="${graylog_url}${condition}${time}${fields}"
 
-msg=`curl -s --user admin:Ab2016 ${url}|\
+msg=`curl -s --user admin:passwd ${url}|\
 sed 1d|\
-awk -F '"' 'BEGIN{OFS=":";ORS="; "}{stats[$(NF-1)]+=1}END{for (stat in stats) {print stat,stats[stat]}}'`
+awk -F '"' 'BEGIN{OFS=":";ORS=";"}{stats[$(NF-1)]+=1}END{for (stat in stats) {print stat,stats[stat]}}'`
 #echo "${msg}"
 
-line=`echo "${msg}"|sed 's/:/,/g;s/;/\n/g;s/ //g'`
+line=`echo "${msg}"|sed 's/:/,/g;s/;/\n/g'`
 
 stat_code='200
 403
@@ -47,10 +47,11 @@ done > ${tmp_file}
 rrd_data=`cat ${tmp_file}|head -n1`
 #Code_200=141;;;; Code_206=0;;;; Code_302=0;;;; Code_304=0;;;; Code_403=0;;;; Code_404=0;;;; Code_499=0;;;; Code_500=0;;;; Code_502=0;;;; 
 total=`echo -e "${line}"|awk -F',' '{sum+=$NF}END{print sum}'`
-#echo ${total}
 
-if [ -z "${total}" -o "${total}"=='0' ];then
+output=`echo -e "${line}"|awk -F',' 'BEGIN{OFS=":";ORS=","}{print "Code_"$1,$2" "}'`
+
+if [ -z "${total}" ];then
     echo "获取数据异常!" && exit ${STATE_UNKNOWN}
 else 
-    echo "访问次数: ${total} | ${rrd_data}" && exit "${STATE_OK}"
+    echo "HTML状态 - 访问次数: ${total} . ${output} | ${rrd_data}" && exit "${STATE_OK}"
 fi
