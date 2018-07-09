@@ -49,7 +49,7 @@ rrd_data=`cat ${tmp_file}|head -n1`
 total=`echo -e "${line}"|awk -F',' '{sum+=$NF}END{print sum}'`
 #echo ${total}
 
-if [ -z "${total}" ];then
+if [ -z "${total}" -o "${total}"=='0' ];then
     echo "获取数据异常!" && exit ${STATE_UNKNOWN}
 else 
     echo "访问次数: ${total} | ${rrd_data}" && exit "${STATE_OK}"
