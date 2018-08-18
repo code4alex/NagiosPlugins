@@ -5,12 +5,13 @@ $opt[1] = "--vertical-label 'Number' -u 10 -X0 --title \"HTML stats on $hostname
 
 $stats = array(
   array(1,  "Code_200", "", "#00FF00", ""),
-  array(2,  "Code_403", "  ", "#F7FE2E", ""),
-  array(3,  "Code_404", "     ", "#FF0000", ""),
-  array(4,  "Code_499", " ", "#FF9900", "\\n"),
-  array(5,  "Code_500", "    ", "#58FAD0", ""),
-  array(6,  "Code_501", "   ", "#6633FF", ""),
-  array(7,  "Code_502", "  ", "#000066", "")
+  array(2,  "Code_400", "  ", "FFFF00", ""),
+  array(3,  "Code_403", "  ", "#F7FE2E", ""),
+  array(4,  "Code_404", "     ", "#FF0000", "\\n"),
+  array(5,  "Code_499", " ", "#FF9900", ""),
+  array(6,  "Code_500", "    ", "#58FAD0", ""),
+  array(7,  "Code_501", "   ", "#6633FF", ""),
+  array(8,  "Code_502", "  ", "#000066", "")
 );
 
 $def[1] = "";

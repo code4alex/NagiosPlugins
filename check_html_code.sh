@@ -30,6 +30,7 @@ awk -F '"' 'BEGIN{OFS=":";ORS=";"}{stats[$(NF-1)]+=1}END{for (stat in stats) {pr
 line=`echo "${msg}"|sed 's/:/,/g;s/;/\n/g'`
 
 stat_code='200
+400
 403
 404
 499
