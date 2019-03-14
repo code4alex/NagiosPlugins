@@ -30,7 +30,7 @@ done > ${tmp_file}
 [ ! -s "${tmp_file}" ] && echo "Check rabbitmq_queue is OK!|num=0;;;" && exit ${STATE_OK}
 
 number=`mawk '{stats[$1" "$2]+=$3;count[$1" "$2]+=1}END{for (stat in stats) {sum+=stats[stat]/count[stat]};print sum}' ${tmp_file}|xargs -r -i echo "{}/1"|bc`
-echo ${number}
+#echo ${number}
 
 if [ ${number} -ge ${warn} ];then
     echo "Check rabbitmq_queue is WARNING!"
