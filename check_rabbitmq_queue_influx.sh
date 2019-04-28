@@ -17,7 +17,7 @@ trap "exit 1"           HUP INT PIPE QUIT TERM
 trap "test -f ${tmp_file} && rm -f ${tmp_file}"  EXIT
 
 influx -database telegraf -format csv \
--execute 'SELECT mean("messages") FROM "rabbitmq_queue" WHERE time > now() -1m GROUP BY time(10s), "queue", "node" fill(none)'|\
+-execute 'SELECT mean("messages") FROM "rabbitmq_queue" WHERE time > now() -1m GROUP BY time(30s), "queue", "node" fill(none)'|\
 grep -Ev '^name'|\
 mawk -F',' '$NF>0{print $(NF-3),$(NF-2),$NF}'|\
 sort -u|sed 's/"//g'|\
@@ -43,7 +43,7 @@ if [ ${number} -ge ${warn} ];then
     echo "|num=${number};;;"
     exit ${STATE_WARNING}
 else
-    echo "Check rabbitmq_queue is OK!|num=${number};;;" && exit ${STATE_OK}
+    echo "Check rabbitmq_queue is OK!${number}/min|num=${number};;;" && exit ${STATE_OK}
 fi
 
 exit ${STATE_UNKNOWN}
