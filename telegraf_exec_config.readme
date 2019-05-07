@@ -1,0 +1,7 @@
+[[inputs.exec]]
+  commands = ["/bin/bash /usr/local/bin/tcp_stat_influx.sh eth0"]
+  timeout = "5s"
+  data_format = "influx"
+[[outputs.graylog]]
+#  ## UDP endpoint for your graylog instance(s).
+  servers = ["10.21.13.72:12201","10.21.13.109:12201","10.21.13.119:12201"]
