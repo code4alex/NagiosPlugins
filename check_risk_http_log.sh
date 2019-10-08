@@ -25,8 +25,8 @@ test -s ${tmp} && head10=`head -n10 ${tmp}` && num=`wc -l ${tmp}|awk '{print $1}
 if [ ${num} -gt 50 ];then
     test -s ${tmp} && gzip ${tmp} &&\
     echo -en "${head10}\n共计:${num}条,更多内容详见附件!\n系统自动发送,请勿直接回复.\n"|\
-    mutt -s '[mk]Web风险请求监控' -e 'set realname=advai_alert' ${mail_to} -a ${tmp}.gz
+    mutt -s '[mk]Web风险请求监控' -e 'set realname=alert' ${mail_to} -a ${tmp}.gz
 else
     test -s ${tmp} &&\
-    cat ${tmp} | mutt -s '[mk]Web风险请求监控' -e 'set realname=advai_alert' ${mail_to}
+    cat ${tmp} | mutt -s '[mk]Web风险请求监控' -e 'set realname=alert' ${mail_to}
 fi
