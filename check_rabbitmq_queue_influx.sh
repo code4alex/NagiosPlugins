@@ -39,7 +39,7 @@ if [ ${number} -ge ${warn} ];then
     do
         num_int=`echo ${value}/1|bc`
         echo "$node $queue $num_int"
-    done|sort -nrk3
+    done|sort -nrk3|head -n10
     echo "|num=${number};;;"
     exit ${STATE_WARNING}
 else
